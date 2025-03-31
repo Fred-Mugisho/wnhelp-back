@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email</title>
+    <style>
+        .bg-blue {
+            background-color: #10A2D7;
+        }
+        .bg-footer {
+            background-color: #CFECF7;
+        }
+        .text-blue {
+            color: #10A2D7;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: white;
+        }
+        .footer {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #CFECF7;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0;">
+    <div class="container">
+        <!-- Header section -->
+        <div style="background-color: #10A2D7; padding: 13px;">
+            <span style="color: white; font-size: 24px; font-weight: bold;">{{ subject }}</span>
+        </div>
+
+        <!-- Message content -->
+        <p style="font-size: 16px; margin-bottom: 16px;">
+            {{ message }}
+        </p>
+        <div class="footer">
+            <div>
+                <span>&copy;Chalu Pay {% now 'Y' %}</span><br>
+                <span>Tous droits réservés</span>
+            </div>
+            <div>
+                Propulsé par <a href="https://www.chalu.com" target="_blank" style="color: #10A2D7;">chalu</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

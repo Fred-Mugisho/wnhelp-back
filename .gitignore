@@ -1,0 +1,15 @@
+*.log 
+*.pot
+*.pyc
+__pycache__/
+*/__pycache__/*
+**/__pycache__/**
+.qodo
+.env
+
+wnhelp_back/__pycache__/*
+wnhelp_api/__pycache__/*
+users_manager/__pycache__/*
+
+system.log
+
