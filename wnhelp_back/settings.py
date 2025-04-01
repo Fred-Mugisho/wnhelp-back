@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'adminsortable2',
+    'ckeditor',
     'users_manager.apps.CustomAuthConfig',
     'wnhelp_api.apps.WnhelpApiConfig',
     'rest_framework',
@@ -161,6 +163,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+        'extraPlugins': ','.join([
+            'codesnippet',  # Ajoute la coloration syntaxique pour le code
+        ]),
+        'skin': 'moono',  # Utiliser un skin clair par défaut
+        'theme': 'dark',  # Par défaut, thème clair
+    },
+}
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -189,5 +204,10 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-    },
+        'django.admin': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        }
+    }
 }

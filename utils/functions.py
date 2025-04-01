@@ -10,6 +10,10 @@ from datetime import datetime, date
 import os
 import logging
 import re
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
 
 logger = logging.getLogger(__name__)
 
@@ -184,3 +188,40 @@ def check_validate_email(email):
         return True
     else:
         return False
+    
+class ImageCompressor:
+    def __init__(self, image, format='WEBP'):
+        self.image = image
+        self.format = format.upper()
+        self.output = BytesIO()
+        self.size = (1200, 600)  # Taille uniforme pour toutes les images
+    
+    def compress(self):
+        try:
+            img = Image.open(self.image)
+
+            # Convertir en mode RGB si nécessaire (évite les erreurs sur PNG)
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            # Redimensionner l'image en conservant le ratio
+            img.thumbnail(self.size)
+            
+            # Définir l'extension et le type MIME
+            ext = self.format.lower()
+            content_type = f'image/{ext}'
+            
+            # Sauvegarde avec compression
+            img.save(self.output, format=self.format, quality=80)
+            self.output.seek(0)
+
+            # 🔥 Correction : Utiliser uniquement le **nom du fichier**, sans le chemin complet
+            filename = os.path.basename(self.image.name).rsplit('.', 1)[0] + f".{ext}"
+
+            return ContentFile(self.output.getvalue(), name=filename)
+
+        except Exception as e:
+            print(f"Erreur lors de la compression de l'image : {e}")
+            return self.image  # Retourner l'image originale en cas d'échec
+
+
