@@ -122,7 +122,8 @@ def is_convertible_to_int(s):
 
 def response_exception(e):
     response = {
-        "message": f"Un problème est survenu, veuillez reessayer plus tard --> {e}",
+        "message": f"Un problème est survenu, veuillez reessayer plus tard",
+        "error": str(e)
     }
     logging.error(f"Error --> {e}")
     return Response(response, status=status.HTTP_400_BAD_REQUEST)

@@ -6,6 +6,15 @@ from .models.contact_message import *
 from .models.subscribe_newsletters import *
 
 @api_view(['GET'])
+def get_categories(request):
+    try:
+        categories = Categorie.objects.all().order_by('name')
+        serializer_data = CategorieSerializer(categories, many=True).data
+        return Response(serializer_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return response_exception(e)
+
+@api_view(['GET'])
 def get_articles(request):
     try:
         articles = Article.objects.filter(status='published').order_by('-id')
@@ -32,11 +41,15 @@ def get_articles(request):
 @api_view(['GET'])
 def get_article(request, slug):
     try:
-        article = Article.objects.filter(slug=slug).first()
+        article = Article.objects.filter(slug=slug, status='published').first()
         if not article:
             return Response({"message": "Article n'existe pas"}, status=status.HTTP_404_NOT_FOUND)
         
+        autres_article = Article.objects.filter(status='published').exclude(slug=slug).order_by('-id')[:3]
+        autres_article_serializer = OthersArticleSerializer(autres_article, many=True).data
+        
         serializer_data = DetailsArticleSerializer(article).data
+        serializer_data['autres_articles'] = autres_article_serializer
         return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
@@ -60,8 +73,9 @@ def commenter_article(request, slug):
         }
         comment_form = CommentSerializer(data=comment_data)
         if comment_form.is_valid():
-            comment_form.save()
-            return Response({"message": "Commentaire ajouté avec succès"}, status=status.HTTP_201_CREATED)
+            comment = comment_form.save()
+            serializer_data = CommentSerializer(comment).data
+            return Response(serializer_data, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "Veuillez vérifier votre commentaire", "error": comment_form.errors}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:

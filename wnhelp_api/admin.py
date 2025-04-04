@@ -115,26 +115,48 @@ class ContactMessageAdmin(admin.ModelAdmin):
         return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
     short_message.short_description = "Message"
     
-@admin.register(Media)
-class MediaAdmin(admin.ModelAdmin):
-    list_display = ('title', 'media_type', 'uploaded_at', 'author', 'preview')
-    list_filter = ('media_type', 'uploaded_at')
+class GallerieImageInline(admin.TabularInline):
+    model = GallerieImage
+    extra = 3  # Nombre de champs vides à afficher pour ajouter de nouvelles images
+    
+    fields = ('image', 'thumbnail',)  # On ajoute le champ thumbnail en lecture seule
+    readonly_fields = ('thumbnail',)
+
+    def thumbnail(self, instance):
+        if instance.image:
+            return format_html('<img src="{}" width="100" style="border-radius: 8px;" />', instance.image.url)
+        return "Aucune image"
+
+    thumbnail.short_description = 'Aperçu'
+
+@admin.register(Gallerie)
+class GallerieAdmin(admin.ModelAdmin):
+    list_display = ('title', 'uploaded_at', 'author')
+    list_filter = ('title', 'uploaded_at')
     search_fields = ('title', 'description', 'author__username')
     ordering = ('-uploaded_at',)
-    readonly_fields = ['preview', 'author']
+    readonly_fields = ['author']
+    
+    inlines = [GallerieImageInline]
     
     def save_model(self, request, obj, form, change):
-        # Si l'auteur n'est pas déjà défini (par exemple, lors de la création d'un article)
-        if not obj.author:
-            obj.author = request.user  # Définit l'auteur comme l'utilisateur connecté
+        author = request.user or None
+        obj.author = author
         super().save_model(request, obj, form, change)
-    
-    def preview(self, obj):
-        """Affiche un aperçu des images dans l’admin"""
-        if obj.media_type == 'image' and obj.file:
-            return format_html(f'<img src="{obj.file.url}" width="50" height="50" style="border-radius: 5px;" />')
-        return "Aperçu non disponible"
-    preview.short_description = "Aperçu"
+        
+@admin.register(GallerieImage)
+class GallerieImageAdmin(admin.ModelAdmin):
+    list_display = ('galerie__title', 'thumbnail')
+    list_filter = ('galerie',)
+    search_fields = ('galerie__title', 'galerie__description')
+    ordering = ('-id',)
+
+    def thumbnail(self, obj):
+        """Affiche un aperçu du logo dans l’admin"""
+        if obj.image:
+            return format_html(f'<img src="{obj.image.url}" width="50" height="50" style="border-radius: 5px;" />')
+        return "Pas de logo"
+    thumbnail.short_description = "Aperçu"
     
 @admin.register(Partenaires)
 class PartenairesAdmin(admin.ModelAdmin):

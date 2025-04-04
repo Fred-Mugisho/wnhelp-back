@@ -1,7 +1,6 @@
 from .categories import *
 from users_manager.models import *
 from ckeditor.fields import RichTextField
-from django.core.files.storage import default_storage
 
 class Article(models.Model):
     """Articles du blog"""
@@ -14,7 +13,7 @@ class Article(models.Model):
     
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
-    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     categorie = models.ForeignKey(Categorie, on_delete=models.SET_NULL, null=True, related_name='articles')
     cover_image = models.ImageField(upload_to='blog/covers/')
     contenu = RichTextField()  # 🔥 Champ texte riche avec CKEditor
@@ -71,6 +70,12 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ['id', 'title', 'slug', 'author', 'categorie', 'cover_image', 'contenu', 'status', 'views', 'created_at', 'updated_at']
+        
+class OthersArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'slug', 'cover_image', 'contenu', 'created_at', 'updated_at']
+        
         
 class DetailsArticleSerializer(serializers.ModelSerializer):
     author = SimpleCustomUserSerializer()
