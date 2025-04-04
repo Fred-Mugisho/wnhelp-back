@@ -19,4 +19,4 @@ class ContactMessage(models.Model):
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
-        fields = ['id', 'name', 'email', 'subject', 'message', 'sent_at', 'responded']
+        fields = ['id', 'name', 'email', 'subject', 'message', 'sent_at']

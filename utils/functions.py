@@ -14,6 +14,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
+from wnhelp_api.tasks import send_mail_template_async
 
 logger = logging.getLogger(__name__)
 
@@ -69,35 +70,7 @@ def generate_otp() -> str:
     return ''.join(secrets.choice(string.digits) for _ in range(6))
 
 def send_mail_template(subject: str, message: str, destinateurs: list, file_attach=None):
-    try:
-        if not destinateurs:
-            raise ValueError("La liste des destinataires ne peut pas être vide.")
-        
-        from_email = EMAIL_HOST_USER
-        subject = f"WNHelp - {subject}"
-        
-        content_html = 'mail_template.html'
-        context = {
-            'message': message,
-            'subject': subject,
-        }
-        html_render = render_to_string(content_html, context)
-        
-        to_send = EmailMultiAlternatives(subject, "", from_email, destinateurs)
-        to_send.attach_alternative(html_render, "text/html")
-        
-        # Attacher le fichier si nécessaire
-        if file_attach:
-            attach_file_path = os.path.join(BASE_DIR, file_attach)
-            if os.path.exists(attach_file_path):
-                to_send.attach_file(attach_file_path)
-            else:
-                logger.warning(f"Le fichier attaché {attach_file_path} n'a pas été trouvé.")
-            
-        to_send.send()
-    except Exception as e:
-        logger.error(f"Erreur lors de l'envoi de l'email: {e}")
-        print(f"Error EMAIL --> {e}")
+    send_mail_template_async.delay(subject, message, destinateurs, file_attach)        
 
 class KBPaginator:
     def __init__(self, items: list, page_size):

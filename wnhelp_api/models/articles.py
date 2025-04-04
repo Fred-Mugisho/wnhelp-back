@@ -29,6 +29,10 @@ class Article(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
 
+        is_new = not self.pk
+        if is_new:
+            self.send_notification_newletter()
+        
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 
         # Compression de l'image
@@ -36,21 +40,28 @@ class Article(models.Model):
         self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
         super().save(update_fields=['cover_image'])
+        
+    def send_notification_newletter(self):
+        from wnhelp_api.models.subscribe_newsletters import SubscriberNewsletter
+        
+        subscribers = SubscriberNewsletter.objects.all()
+        for subscriber in subscribers:
+            send_mail_template("WNHelp - Nouvel article", f"Un nouvel article a été publier sur notre site: {self.title}", [subscriber.email])
 
     def __str__(self):
         return self.title
     
     @property
-    def sections(self):
+    def all_sections(self):
         from .sections_article import SectionArticle, SectionArticleSerializer
         sects = SectionArticle.objects.filter(article=self).order_by('order')
         serialized_data = SectionArticleSerializer(sects, many=True).data
         return serialized_data
     
     @property
-    def comments(self):
+    def all_comments(self):
         from .commentaires import Comment, CommentSerializer
-        comments = Comment.objects.filter(article=self).order_by('-created_at')
+        comments = Comment.objects.filter(article=self, approved=True).order_by('-created_at')
         serialized_data = CommentSerializer(comments, many=True).data
         return serialized_data
     
@@ -66,7 +77,7 @@ class DetailsArticleSerializer(serializers.ModelSerializer):
     categorie = CategorieSerializer()
     class Meta:
         model = Article
-        fields = ['id', 'title', 'slug', 'author', 'categorie', 'cover_image', 'contenu', 'sections', 'status', 'views', 'created_at', 'updated_at', 'comments']
+        fields = ['id', 'title', 'slug', 'author', 'categorie', 'cover_image', 'contenu', 'status', 'views', 'created_at', 'updated_at', 'all_comments']
         
 class ArticleFormSerializer(serializers.ModelSerializer):
     class Meta:

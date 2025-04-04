@@ -28,4 +28,4 @@ class SectionArticle(models.Model):
 class SectionArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = SectionArticle
-        fields = ['id', 'article', 'title', 'content', 'image', 'order']
+        fields = ['id', 'article', 'title', 'contenu', 'image', 'order']

@@ -211,3 +211,10 @@ LOGGING = {
         }
     }
 }
+
+if DEVELOPPEMENT:
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+else:
+    CELERY_BROKER_URL = 'redis://:cJBN9fkHaKwfFHlDzmL@127.0.0.1:59153/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
