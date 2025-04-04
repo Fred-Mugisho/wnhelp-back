@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from utils.functions import *
+from rest_framework import serializers
 
 class Gallerie(models.Model):
     """Groupe d'images pour la galerie"""
@@ -15,6 +16,11 @@ class Gallerie(models.Model):
 
     def __str__(self):
         return self.title
+    
+class GallerieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gallerie
+        fields = ['id', 'title', 'description', 'uploaded_at']
 
 class GallerieImage(models.Model):
     """Images associées à une galerie"""
@@ -34,3 +40,9 @@ class GallerieImage(models.Model):
         self.image.save(compressed_image.name, compressed_image, save=False)
 
         super().save(update_fields=['image'])
+        
+class GallerieImageSerializer(serializers.ModelSerializer):
+    galerie = GallerieSerializer(read_only=True)
+    class Meta:
+        model = GallerieImage
+        fields = ['id', 'galerie', 'image']

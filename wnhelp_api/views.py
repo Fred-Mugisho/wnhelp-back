@@ -4,6 +4,7 @@ from .models.rapports import *
 from .models.commentaires import *
 from .models.contact_message import *
 from .models.subscribe_newsletters import *
+from .models.media import *
 
 @api_view(['GET'])
 def get_categories(request):
@@ -179,5 +180,17 @@ def subscribe_newsletters(request):
             return Response({"message": "Abonnement effectué avec succès"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "Veuillez vérifier votre message", "error": message_form.errors}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return response_exception(e)
+    
+@api_view(['GET'])
+def gallerie(request):
+    try:
+        page = request.GET.get("page", 1)
+        limit_page = request.GET.get("limit_page", 12)
+        images = GallerieImage.objects.all()
+        serializer_data = GallerieImageSerializer(images, many=True).data
+        paginate_data = KBPaginator(serializer_data, limit_page).get_page(page)
+        return Response(paginate_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
