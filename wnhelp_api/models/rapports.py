@@ -37,6 +37,11 @@ class RapportSerializer(serializers.ModelSerializer):
         model = Rapport
         fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'published_at', 'updated_at', 'author']
         
+class OthersRapportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rapport
+        fields = ['id', 'title', 'slug', 'cover_image', 'contenu', 'published_at', 'updated_at']
+        
 class RapportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport

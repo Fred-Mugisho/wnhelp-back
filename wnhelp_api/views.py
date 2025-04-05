@@ -5,6 +5,7 @@ from .models.commentaires import *
 from .models.contact_message import *
 from .models.subscribe_newsletters import *
 from .models.media import *
+from .models.partenaires import *
 
 @api_view(['GET'])
 def get_categories(request):
@@ -36,6 +37,16 @@ def get_articles(request):
         serializer_data = ArticleSerializer(articles, many=True).data
         pagination = KBPaginator(serializer_data, limit_page).get_page(page)
         return Response(pagination, status=status.HTTP_200_OK)
+    except Exception as e:
+        return response_exception(e)
+    
+@api_view(['GET'])
+def get_recents_articles(request):
+    try:
+        articles = Article.objects.filter(status='published').order_by('-id')[:3]
+        
+        serializer_data = ArticleSerializer(articles, many=True).data
+        return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
     
@@ -109,7 +120,11 @@ def get_rapport(request, slug):
         if not rapport:
             return Response({"message": "Rapport n'existe pas"}, status=status.HTTP_404_NOT_FOUND)
         
+        autres_rapport = Rapport.objects.all().exclude(slug=slug).order_by('-id')[:3]
+        autres_rapport_serializer = OthersRapportSerializer(autres_rapport, many=True).data
+        
         serializer_data = RapportSerializer(rapport).data
+        serializer_data['autres_rapports'] = autres_rapport_serializer
         return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
@@ -192,5 +207,14 @@ def gallerie(request):
         serializer_data = GallerieImageSerializer(images, many=True).data
         paginate_data = KBPaginator(serializer_data, limit_page).get_page(page)
         return Response(paginate_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return response_exception(e)
+    
+@api_view(['GET'])
+def get_partenaires(request):
+    try:
+        partenaires = Partenaires.objects.all()
+        serializer_data = PartenairesSerializer(partenaires, many=True).data
+        return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
