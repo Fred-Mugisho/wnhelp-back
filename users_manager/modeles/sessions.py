@@ -16,6 +16,12 @@ class UserSession(models.Model):
     def __str__(self):
         return f"Session {self.session_key[:10]}... - Expire le {self.expires_at}"
     
+    def get_user_email(self):
+        return self.user.email
+    
+    def get_user_name(self):
+        return self.user.nom_complet
+    
     @property
     def _session_key(self):
         return f"{self.session_key[:10]}...{self.session_key[60:]}"

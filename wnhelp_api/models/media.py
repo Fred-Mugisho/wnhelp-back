@@ -33,6 +33,9 @@ class GallerieImage(models.Model):
     def __str__(self):
         return f"Image de {self.galerie.title}"
     
+    def get_gallerie_title(self):
+        return self.galerie.title
+    
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 

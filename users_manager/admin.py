@@ -119,16 +119,6 @@ class UserSessionAdmin(admin.ModelAdmin):
     search_fields = ['user', 'get_user_name', 'ip_address']
     list_filter = ['user']
     ordering = ('created_at',)
-    
-    def get_user_email(self, obj):
-        return obj.user.email
-    
-    def get_user_name(self, obj):
-        return obj.user.nom_complet
-    
-    get_user_name.short_description = 'Nom de l\'utilisateur'
-    get_user_email.short_description = 'Email de l\'utilisateur'
-    
         
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -159,18 +149,9 @@ class UserSessionAdmin(admin.ModelAdmin):
 @admin.register(RoleUser)
 class RoleUserAdmin(admin.ModelAdmin):
     list_display = ['get_user_email', 'role', 'is_active', 'created_at']
-    search_fields = ['user', 'role']
-    list_filter = ['user', 'role', 'is_active', 'created_at']
-    ordering = ('get_user_email',)
-    
-    def get_user_email(self, obj):
-        return obj.user.email
-    
-    def get_user_name(self, obj):
-        return obj.user.nom_complet
-    
-    get_user_name.short_description = 'Nom de l\'utilisateur'
-    get_user_email.short_description = 'Email de l\'utilisateur'
+    search_fields = ['user__email', 'role']
+    list_filter = ['user__email', 'role', 'is_active', 'created_at']
+    ordering = ('user__email',)
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -201,18 +182,9 @@ class RoleUserAdmin(admin.ModelAdmin):
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ['get_user_email', 'message', 'is_read', 'created_at']
-    search_fields = ['get_user_email', 'get_user_name', 'message']
+    search_fields = ['user__email', 'user__nom_complet', 'message']
     list_filter = ['user', 'is_read', 'created_at']
-    ordering = ('get_user_email', 'is_read')
-    
-    def get_user_email(self, obj):
-        return obj.user.email
-    
-    def get_user_name(self, obj):
-        return obj.user.nom_complet
-    
-    get_user_name.short_description = 'Nom de l\'utilisateur'
-    get_user_email.short_description = 'Email de l\'utilisateur'
+    ordering = ('user__email', 'is_read')
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)

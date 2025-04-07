@@ -150,10 +150,6 @@ class GallerieImageAdmin(admin.ModelAdmin):
     list_filter = ('galerie',)
     search_fields = ('galerie__title', 'galerie__description')
     ordering = ('-id',)
-    
-    def get_gallerie_title(self, obj):
-        return obj.galerie.title
-    get_gallerie_title.short_description = 'Titre de la galerie'
 
     def thumbnail(self, obj):
         """Affiche un aperçu du logo dans l’admin"""

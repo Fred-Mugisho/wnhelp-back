@@ -13,6 +13,12 @@ class Notification(models.Model):
     def __str__(self):
         return self.message
     
+    def get_user_email(self):
+        return self.user.email
+    
+    def get_user_name(self):
+        return self.user.nom_complet
+    
     def mark_as_read(self):
         self.is_read = True
         self.save()

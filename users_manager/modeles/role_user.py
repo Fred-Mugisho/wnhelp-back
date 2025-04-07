@@ -14,6 +14,12 @@ class RoleUser(models.Model):
 
     def __str__(self):
         return self.role
+    
+    def get_user_email(self):
+        return self.user.email
+    
+    def get_user_name(self):
+        return self.user.nom_complet
 
 class RoleUserSerializer(serializers.ModelSerializer):
     class Meta:
