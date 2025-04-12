@@ -14,12 +14,13 @@ def send_mail_template_async(subject: str, message: str, destinateurs: list, fil
         if not destinateurs:
             raise ValueError("La liste des destinataires ne peut pas être vide.")
 
+        objet = subject
         from_email = settings.EMAIL_HOST_USER
-        subject = f"WNHelp - {subject}"
+        subject = f"WNHelp - {objet}"
 
         context = {
             'message': message,
-            'subject': subject,
+            'objet': objet,
         }
         html_render = render_to_string('mail_template.html', context)
 

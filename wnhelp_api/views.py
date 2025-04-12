@@ -149,14 +149,32 @@ def contactez_nous(request):
             
             # Envoyer un email de notification
             subject = "Nouveau message de contact sur le site"
-            message = f"Vous avez reçu un nouveau message de contact de {name} ({email}):\n\n{message}"
+            message = f"""
+                <p>Bonjour,</p>
+                <p>Vous avez reçu un <strong>nouveau message de contact</strong> via le site web de <strong>World Needs and Help</strong>.</p>
+                <p><strong>Expéditeur :</strong> {name}<br>
+                <strong>Email :</strong> <a href="mailto:{email}">{email}</a></p>
+                <p><strong>Message :</strong></p>
+                <blockquote style="border-left: 4px solid #296638; padding-left: 12px; color: #333;">
+                    {message.replace('\n', '<br>')}
+                </blockquote>
+                <p style="margin-top: 32px;">Veuillez répondre dans les meilleurs délais.</p>
+                <p>Cordialement,<br>
+                L'équipe <strong>World Needs and Help</strong></p>
+            """
             destinateurs = ['frederick@wnhelp.org']
             # destinateurs = ['admin@wnhelp.org', 'info@wnhelp.org', 'wnh@wnhelp.org']
             send_mail_template(subject, message, destinateurs)
             
             # Envoyer un email de confirmation à l'utilisateur
             subject = "Confirmation de réception de votre message"
-            message = f"Bonjour {name},\n\nMerci pour votre message. Nous vous contacterons bientôt.\n\nCordialement,\nL'équipe WNHelp"
+            message = f"""
+                <p>Bonjour <strong>{name}</strong>,</p>
+                <p>Merci pour votre message. Nous l’avons bien reçu et vous contacterons dans les plus brefs délais.</p>
+                <p>En attendant, vous pouvez consulter notre site pour en savoir plus sur nos actions et nos domaines d’intervention.</p>
+                <p>Cordialement,<br>
+                L'équipe <strong>World Needs and Help</strong></p>
+            """
             send_mail_template(subject, message, [email])
             
             return Response({"message": "Message envoyé avec succès"}, status=status.HTTP_201_CREATED)
@@ -176,7 +194,14 @@ def subscribe_newsletters(request):
         if SubscriberNewsletter.objects.filter(email=email).exists():
             # Envoyer un email de confirmation à l'utilisateur
             subject = "Confirmation de votre abonnement à notre newsletter"
-            message = f"Bonjour,\n\nMerci pour votre abonnement à notre newsletter. Vous recevrez bientôt nos dernières actualités.\n\nCordialement,\nL'équipe WNHelp"
+            message = """
+                <p>Bonjour,</p>
+                <p>Merci pour votre abonnement à notre <strong>newsletter</strong> ! 🎉</p>
+                <p>Désormais, vous recevrez régulièrement nos dernières <strong>actualités et rapports</strong> directement dans votre boîte mail.</p>
+                <p>Si ce message ne vous était pas destiné ou si vous vous êtes inscrit par erreur, vous pouvez vous désabonner à tout moment via le lien en bas de nos emails.</p>
+                <p style="margin-top: 32px;">Cordialement,<br>
+                L’équipe <strong>World Needs and Help</strong></p>
+            """
             send_mail_template(subject, message, [email])
             return Response({"message": "Abonnement effectué avec succès"}, status=status.HTTP_201_CREATED)
         
@@ -189,7 +214,14 @@ def subscribe_newsletters(request):
             
             # Envoyer un email de confirmation à l'utilisateur
             subject = "Confirmation de votre abonnement à notre newsletter"
-            message = f"Bonjour,\n\nMerci pour votre abonnement à notre newsletter. Vous recevrez bientôt nos dernières actualités.\n\nCordialement,\nL'équipe WNHelp"
+            message = """
+                <p>Bonjour,</p>
+                <p>Merci pour votre abonnement à notre <strong>newsletter</strong> ! 🎉</p>
+                <p>Désormais, vous recevrez régulièrement nos dernières <strong>actualités et rapports</strong> directement dans votre boîte mail.</p>
+                <p>Si ce message ne vous était pas destiné ou si vous vous êtes inscrit par erreur, vous pouvez vous désabonner à tout moment via le lien en bas de nos emails.</p>
+                <p style="margin-top: 32px;">Cordialement,<br>
+                L’équipe <strong>World Needs and Help</strong></p>
+            """
             send_mail_template(subject, message, [email])
             
             return Response({"message": "Abonnement effectué avec succès"}, status=status.HTTP_201_CREATED)

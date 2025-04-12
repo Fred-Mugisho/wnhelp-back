@@ -5,48 +5,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email</title>
+    <title>Email - {{ objet }}</title>
     <style>
-        .bg-blue {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-wrapper {
+            max-width: 650px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .email-header {
             background-color: #296638;
+            color: #ffffff;
+            padding: 24px;
+            text-align: center;
         }
-        .bg-footer {
-            background-color: #CFECF7;
+
+        .email-header h1 {
+            margin: 0;
+            font-size: 20px;
         }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 16px;
-            background-color: white;
+
+        .email-body {
+            padding: 32px 24px;
+            font-size: 16px;
+            color: #333;
+            line-height: 1.6;
         }
-        .footer {
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #CFECF7;
+
+        .email-body p {
+            margin: 0 0 1em;
+        }
+
+        .email-footer {
+            background-color: #eaf6fc;
+            color: #555;
+            padding: 20px 24px;
+            text-align: center;
             font-size: 14px;
+        }
+
+        .email-footer a {
+            color: #296638;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .email-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media screen and (max-width: 480px) {
+            .email-body {
+                padding: 24px 16px;
+            }
+
+            .email-footer {
+                padding: 16px;
+            }
         }
     </style>
 </head>
 
-<body style="font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0;">
-    <div class="container">
-        <!-- Header section -->
-        <div style="background-color: #296638; padding: 13px;">
-            <span style="color: white; font-size: 24px; font-weight: bold;">{{ subject }}</span>
+<body>
+    <div class="email-wrapper">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>{{ objet }}</h1>
         </div>
 
-        <!-- Message content -->
-        <p style="font-size: 16px; margin-bottom: 16px;">
-            {{ message }}
-        </p>
-        <div class="footer">
-            <a href="https://www.wnhelp.org" target="_blank" style="color: #296638;">World Needs and Help</a>
+        <!-- Content -->
+        <div class="email-body">
+            {{ message|safe }}
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>
+                Merci de nous faire confiance. Pour plus d’informations, visitez notre site :
+                <br>
+                <a href="https://www.wnhelp.org" target="_blank">World Needs and Help</a>
+            </p>
         </div>
     </div>
-
 </body>
 
 </html>

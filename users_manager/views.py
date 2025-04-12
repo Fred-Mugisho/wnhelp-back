@@ -181,8 +181,21 @@ def create_update_user(request, id=None):
                 user.set_password(password)
                 user.save()
                 
-                subject = "Bienvenue"
-                message = f"Bonjour {user.nom_complet},\n\nVeuillez utiliser ce mot de passe pour vous connecter:\n\n{password}\n\nMerci de vous connecter et de modifier votre mot de passe.\n\nCordialement,\nL'administration"
+                subject = "Bienvenue sur la plateforme de World Needs and Help"
+                message = f"""
+                    <p>Bonjour <strong>{user.nom_complet}</strong>,</p>
+                    <p>Nous sommes heureux de vous accueillir sur la plateforme de <strong>World Needs and Help</strong>.</p>
+                    <p>Voici vos informations de connexion :</p>
+                    <ul>
+                        <li><strong>Mot de passe temporaire :</strong> {password}</li>
+                    </ul>
+                    <p>Veuillez vous connecter dès que possible et <strong>changer votre mot de passe</strong> pour sécuriser votre compte.</p>
+                    <p>Si vous avez des questions ou des difficultés, n'hésitez pas à nous contacter.</p>
+                    <p style="margin-top: 32px;">
+                        Cordialement,<br>
+                        L'équipe <strong>World Needs and Help</strong>
+                    </p>
+                """
                 destinateurs = [user.email]
                 send_mail_template(subject, message, destinateurs)
             return Response(CustomUserSerializer(user).data, status=status.HTTP_200_OK)
@@ -408,8 +421,16 @@ def forgot_password(request):
         user.set_otp_secret()
         user.save()
         
-        subject = "Reinitialisation de votre mot de passe"
-        message = f"Bonjour {user.nom_complet}, veuillez utiliser le code OTP suivant pour confirmer votre reinitialisation de mot de passe : {user.otp_secret}"
+        subject = "Réinitialisation de votre mot de passe"
+        message = f"""
+            <p>Bonjour <strong>{user.nom_complet}</strong>,</p>
+            <p>Nous avons reçu une demande de réinitialisation de votre mot de passe.</p>
+            <p>Veuillez utiliser le code OTP suivant pour confirmer l'opération :</p>
+            <p style="font-size: 22px; font-weight: bold; color: #296638;">{user.otp_secret}</p>
+            <p>Ce code est temporaire et expirera dans quelques minutes. Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer ce message ou nous contacter immédiatement.</p>
+            <p style="margin-top: 32px;">Cordialement,<br>
+            L'équipe <strong>World Needs and Help</strong></p>
+        """
         send_mail_template(subject, message, [email])
         
         message_notification = f"Une demande de reinitialisation de mot de passe a été faite pour votre compte."

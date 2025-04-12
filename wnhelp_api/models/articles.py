@@ -44,8 +44,22 @@ class Article(models.Model):
         from wnhelp_api.models.subscribe_newsletters import SubscriberNewsletter
         
         subscribers = SubscriberNewsletter.objects.all()
+        subject = "WNHelp - Nouvel article"
+        message = f"""
+            <p>Bonjour,</p>
+            <p>Nous venons de publier un <strong>nouvel article</strong> sur notre site :</p>
+            <p style="font-size: 18px;"><strong>{self.title}</strong></p>
+            <p>Nous vous invitons à le consulter dès maintenant pour en savoir plus sur nos dernières actions et initiatives.</p>
+            <p><a href="https://rdc.wnhelp.org/actualites/{self.slug}" target="_blank" style="background-color: #296638; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Lire l'article</a></p>
+            <p style="margin-top: 32px;">Merci de faire partie de notre communauté,<br>
+            L’équipe <strong>World Needs and Help</strong></p>
+        """
         for subscriber in subscribers:
-            send_mail_template("WNHelp - Nouvel article", f"Un nouvel article a été publier sur notre site: {self.title}", [subscriber.email])
+            send_mail_template(
+                subject,
+                message,
+                [subscriber.email]
+            )
 
     def __str__(self):
         return self.title
