@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import secrets
 import string
-from wnhelp_back.settings import EMAIL_HOST_USER, BASE_DIR
+from wnhelp_back.settings import EMAIL_HOST_USER, BASE_DIR, EMAIL_HOST
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from datetime import datetime, date
@@ -69,8 +69,8 @@ def generate_password(length: int = 10) -> str:
 def generate_otp() -> str:
     return ''.join(secrets.choice(string.digits) for _ in range(6))
 
-def send_mail_template(subject: str, message: str, destinateurs: list, file_attach=None):
-    send_mail_template_async.delay(subject, message, destinateurs, file_attach)        
+def send_mail_template(subject: str, message: str, destinateurs: list, bcc: list = None, file_attach: str = None):
+    send_mail_template_async(subject, message, destinateurs, file_attach)        
 
 class KBPaginator:
     def __init__(self, items: list, page_size):

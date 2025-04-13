@@ -27,38 +27,39 @@ class Article(models.Model):
         
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
-
         is_new = not self.pk
-        if is_new:
-            self.send_notification_newletter()
         
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 
+        if is_new and self.status == 'published':
+            self.send_notification_newsletter()
+            
         # Compression de l'image
         compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress()
         self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
         super().save(update_fields=['cover_image'])
         
-    def send_notification_newletter(self):
+    def send_notification_newsletter(self):
         from wnhelp_api.models.subscribe_newsletters import SubscriberNewsletter
         
-        subscribers = SubscriberNewsletter.objects.all()
-        subject = "WNHelp - Nouvel article"
-        message = f"""
-            <p>Bonjour,</p>
-            <p>Nous venons de publier un <strong>nouvel article</strong> sur notre site :</p>
-            <p style="font-size: 18px;"><strong>{self.title}</strong></p>
-            <p>Nous vous invitons à le consulter dès maintenant pour en savoir plus sur nos dernières actions et initiatives.</p>
-            <p><a href="https://rdc.wnhelp.org/actualites/{self.slug}" target="_blank" style="background-color: #296638; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Lire l'article</a></p>
-            <p style="margin-top: 32px;">Merci de faire partie de notre communauté,<br>
-            L’équipe <strong>World Needs and Help</strong></p>
-        """
-        for subscriber in subscribers:
-            send_mail_template(
-                subject,
-                message,
-                [subscriber.email]
+        if SubscriberNewsletter.objects.exists():
+            subscribers = SubscriberNewsletter.objects.all()
+            subject = "Nouvel article"
+            message = f"""
+                <p>Bonjour,</p>
+                <p>Nous venons de publier un <strong>nouvel article</strong> sur notre site :</p>
+                <p style="font-size: 18px;"><strong>{self.title}</strong></p>
+                <p>Vous pouvez le consulter depuis le lien : <a href="https://rdc.wnhelp.org/actualites/{self.slug}" target="_blank" style="text-decoration: underline;">Lire l'article</a></p>
+                <p style="margin-top: 32px;">Merci de faire partie de notre communauté,<br>
+                L’équipe <strong>World Needs and Help</strong></p>
+            """
+            destinateurs = [sub.email for sub in subscribers]
+            send_mail_template_async(
+                subject=subject,
+                message=message,
+                destinateurs=['admin@wnhelp.org'],
+                bcc=destinateurs
             )
 
     def __str__(self):

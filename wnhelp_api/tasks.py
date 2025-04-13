@@ -9,9 +9,9 @@ from celery import shared_task
 logger = logging.getLogger(__name__)
 
 @shared_task
-def send_mail_template_async(subject: str, message: str, destinateurs: list, file_attach: str = None):
+def send_mail_template_async(subject: str, message: str, destinateurs: list, bcc: list = [], file_attach: str = None):
     try:
-        if not destinateurs:
+        if not destinateurs and not bcc:
             raise ValueError("La liste des destinataires ne peut pas être vide.")
 
         objet = subject
@@ -24,7 +24,7 @@ def send_mail_template_async(subject: str, message: str, destinateurs: list, fil
         }
         html_render = render_to_string('mail_template.html', context)
 
-        to_send = EmailMultiAlternatives(subject, "", from_email, destinateurs)
+        to_send = EmailMultiAlternatives(subject, "", from_email=from_email, to=destinateurs, bcc=bcc)
         to_send.attach_alternative(html_render, "text/html")
 
         # Attacher un fichier si fourni
