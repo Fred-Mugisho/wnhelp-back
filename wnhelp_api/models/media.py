@@ -13,6 +13,7 @@ class Gallerie(models.Model):
     
     class Meta:
         verbose_name_plural = "GALERIES"
+        ordering = ['-id']
 
     def __str__(self):
         return self.title
@@ -29,6 +30,7 @@ class GallerieImage(models.Model):
     
     class Meta:
         verbose_name_plural = "IMAGES DE LA GALERIE"
+        ordering = ['-id']
 
     def __str__(self):
         return f"Image de {self.galerie.title}"
