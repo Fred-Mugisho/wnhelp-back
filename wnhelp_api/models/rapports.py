@@ -1,6 +1,7 @@
 from users_manager.models import *
 from django.utils.text import slugify
 from ckeditor.fields import RichTextField
+from django.utils import timezone
 
 class Rapport(models.Model):
     """Rapports publiés par l'organisation"""
@@ -9,7 +10,7 @@ class Rapport(models.Model):
     contenu = RichTextField()  # 🔥 Champ texte riche avec CKEditor
     file = models.FileField(upload_to='reports/')
     cover_image = models.ImageField(upload_to='reports/covers/', blank=True, null=True)
-    published_at = models.DateTimeField(auto_now_add=True)
+    published_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     
@@ -68,4 +69,4 @@ class OthersRapportSerializer(serializers.ModelSerializer):
 class RapportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport
-        fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'author']
+        fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'author', 'published_at']
