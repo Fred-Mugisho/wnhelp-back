@@ -45,6 +45,15 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 CORS_ALLOW_ALL_ORIGINS = True  # (Désactive après test, à remplacer par les domaines autorisés)
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["*"]
@@ -159,8 +168,8 @@ EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL')
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "https://media.wnhelp.org/"
+MEDIA_ROOT = "/home/worldnee/media.wnhelp.org/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
