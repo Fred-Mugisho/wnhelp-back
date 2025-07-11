@@ -26,7 +26,7 @@ class Rapport(models.Model):
             self.send_notification_newsletter()
         
         if self.cover_image:
-            compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress()
+            compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
             self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
             super().save(update_fields=['cover_image'])

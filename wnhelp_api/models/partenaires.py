@@ -19,7 +19,7 @@ class Partenaires(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        compressed_image = ImageCompressor(self.logo, format='WEBP').compress()
+        compressed_image = ImageCompressor(self.logo, format='WEBP').compress_image()
         self.logo.save(compressed_image.name, compressed_image, save=False)
 
         super().save(update_fields=['logo'])

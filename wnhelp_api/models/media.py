@@ -41,7 +41,7 @@ class GallerieImage(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 
-        compressed_image = ImageCompressor(self.image, format='WEBP').compress()
+        compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
         self.image.save(compressed_image.name, compressed_image, save=False)
 
         super().save(update_fields=['image'])

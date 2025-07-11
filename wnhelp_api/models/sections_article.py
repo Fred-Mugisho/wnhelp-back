@@ -20,7 +20,7 @@ class SectionArticle(models.Model):
         
         if self.image:
             # Compression de l'image
-            compressed_image = ImageCompressor(self.image, format='WEBP').compress()
+            compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
             self.image.save(compressed_image.name, compressed_image, save=False)
 
             super().save(update_fields=['image'])

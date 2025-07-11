@@ -15,6 +15,8 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from wnhelp_api.tasks import send_mail_template_async
+from django.core.files.storage import default_storage
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -197,5 +199,33 @@ class ImageCompressor:
         except Exception as e:
             print(f"Erreur lors de la compression de l'image : {e}")
             return self.image  # Retourner l'image originale en cas d'échec
+        finally:
+            self.output.close()
+            
+    def compress_image(self):
+        try:
+            if self.image.name.endswith(".webp"):
+                return self.image
+            
+            old_image_name = self.image.name
+
+            with default_storage.open(old_image_name, 'rb') as img_file:
+                img = Image.open(img_file)
+                img = img.convert("RGB")
+                img = img.resize((200, 200), Image.Resampling.LANCZOS)
+
+                original_filename = os.path.basename(old_image_name)
+                base, _ = os.path.splitext(original_filename)
+                new_filename = f"{base}.webp"
+
+                img.save(self.output, "WEBP", quality=85)
+                self.output.seek(0)
+
+                return ContentFile(self.output.getvalue(), name=new_filename)
+        except Exception as e:
+            print(f"Error compressing image: {e}")
+            return self.image
+        finally:
+            self.output.close()
 
 
