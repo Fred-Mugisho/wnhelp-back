@@ -10,7 +10,7 @@ class JobOffer(models.Model):
         ('STAGE', 'Stage'),
         ('INTERIM', 'Intérim'),
     ]
-
+    reference = models.CharField(max_length=255, null=True, blank=True, unique=True)
     titre = models.CharField(max_length=255)
     description = models.TextField()
     profil_recherche = models.TextField()
@@ -31,6 +31,7 @@ class JobOffer(models.Model):
         ordering = ['-date_publication']
         
 class JobOfferSerializer(serializers.ModelSerializer):
+    author = SimpleCustomUserSerializer()
     class Meta:
         model = JobOffer
-        fields = ['id', 'titre', 'description', 'profil_recherche', 'type_contrat', 'lieu', 'date_publication', 'date_expiration', 'actif', 'lien_postulation', 'author', 'counter_views']
+        fields = ['id', 'reference', 'titre', 'description', 'profil_recherche', 'type_contrat', 'lieu', 'date_publication', 'date_expiration', 'actif', 'lien_postulation', 'author', 'counter_views']

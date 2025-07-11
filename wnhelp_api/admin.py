@@ -223,7 +223,7 @@ class SectionArticleAdmin(admin.ModelAdmin):
 
 @admin.register(JobOffer)
 class JobOfferAdmin(admin.ModelAdmin):
-    list_display = ('titre', 'profil_recherche', 'type_contrat', 'counter_views', 'date_publication', 'actif')
+    list_display = ('reference', 'titre', 'type_contrat', 'counter_views', 'date_publication', 'actif')
     list_filter = ('date_publication', 'type_contrat', 'actif')
     search_fields = ('titre', 'description', 'profil_recherche', 'lieu')
     ordering = ('-date_publication',)
