@@ -178,6 +178,8 @@ def contactez_nous(request):
 
             # Envoyer un email de notification
             subject = "Nouveau message de contact sur le site"
+            
+            html_message = message.replace('\n', '<br>')
             message = f"""
                 <p>Bonjour,</p>
                 <p>Vous avez reçu un <strong>nouveau message de contact</strong> via le site web de <strong>World Needs and Help</strong>.</p>
@@ -185,7 +187,7 @@ def contactez_nous(request):
                 <strong>Email :</strong> <a href="mailto:{email}">{email}</a></p>
                 <p><strong>Message :</strong></p>
                 <blockquote style="border-left: 4px solid #296638; padding-left: 12px; color: #333;">
-                    {message.replace('\n', '<br>')}
+                    {html_message}
                 </blockquote>
                 <p style="margin-top: 32px;">Veuillez répondre dans les meilleurs délais.</p>
                 <p>Cordialement,<br>
