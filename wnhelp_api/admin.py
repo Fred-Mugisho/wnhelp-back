@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from adminsortable2.admin import SortableInlineAdminMixin, SortableAdminBase
 from ckeditor.widgets import CKEditorWidget
+from .models.jobs import *
 
 @admin.register(SubscriberNewsletter)
 class SubscriberNewsletterAdmin(admin.ModelAdmin):
@@ -219,3 +220,16 @@ class SectionArticleAdmin(admin.ModelAdmin):
             return format_html(f'<img src="{obj.image.url}" width="50" height="50" style="border-radius: 5px;" />')
         return "Pas d'image"
     image_preview.short_description = "Aperçu"
+
+@admin.register(JobOffer)
+class JobOfferAdmin(admin.ModelAdmin):
+    list_display = ('titre', 'profil_recherche', 'type_contrat', 'counter_views', 'date_publication', 'actif')
+    list_filter = ('date_publication', 'type_contrat', 'actif')
+    search_fields = ('titre', 'description', 'profil_recherche', 'lieu')
+    ordering = ('-date_publication',)
+    readonly_fields = ['author', 'counter_views']
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.author:
+            obj.author = request.user
+        super().save_model(request, obj, form, change)

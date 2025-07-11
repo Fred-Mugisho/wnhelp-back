@@ -6,6 +6,7 @@ from .models.contact_message import *
 from .models.subscribe_newsletters import *
 from .models.media import *
 from .models.partenaires import *
+from .models.jobs import *
 
 @api_view(['GET'])
 def get_categories(request):
@@ -248,5 +249,44 @@ def get_partenaires(request):
         partenaires = Partenaires.objects.all()
         serializer_data = PartenairesSerializer(partenaires, many=True).data
         return Response(serializer_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return response_exception(e)
+    
+@api_view(['GET'])
+def offres_emploi(request, id=None):
+    try:
+        if id:
+            offre = JobOffer.objects.get(id=id)
+            
+            offre.counter_views += 1
+            offre.save()
+            
+            serializer_data = JobOfferSerializer(offre).data
+            return Response(serializer_data, status=status.HTTP_200_OK)
+        
+        offres = JobOffer.objects.filter(actif=True, date_expiration__gte=timezone.now()).order_by('-date_publication')
+        
+        page = request.GET.get("page", 1)
+        limit_page = request.GET.get("limit_page", 12)
+        search_content = request.GET.get("search_content")
+        
+        if search_content:
+            offres = offres.filter(
+                Q(titre__icontains=search_content) 
+                | Q(description__icontains=search_content)
+                | Q(profil_recherche__icontains=search_content)
+                | Q(type_contrat__icontains=search_content)
+                | Q(lieu__icontains=search_content)
+            )
+            
+        page_number = int(page) if is_convertible_to_int(page) else 1
+        limit_page_number = int(limit_page) if is_convertible_to_int(limit_page) else 12
+                
+        serializer_data = JobOfferSerializer(offres, many=True).data
+        
+        offres_pagination = KBPaginator(serializer_data, limit_page_number).get_page(page_number)
+        return Response(offres_pagination, status=status.HTTP_200_OK)
+    except JobOffer.DoesNotExist:
+        return Response({"message": f"Offre d'emploi avec l'id {id} n'existe pas"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return response_exception(e)

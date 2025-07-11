@@ -13,4 +13,8 @@ urlpatterns = [
     path('subscribe_newsletters/', views.subscribe_newsletters, name='subscribe_newsletters'),
     path('gallerie/', views.gallerie, name='gallerie'),
     path('partenaires/', views.get_partenaires, name='get_partenaires'),
+    
+    # Jobs API
+    path('offres_emploi/', views.offres_emploi, name='offres_emploi'),
+    path('offres_emploi/<int:id>/', views.offres_emploi, name='offres_emploi_id'),
 ]
