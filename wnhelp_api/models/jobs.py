@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from rest_framework import serializers
 from users_manager.models import *
+from ckeditor.fields import RichTextField
 
 class JobOffer(models.Model):
     TYPE_CONTRAT = [
@@ -12,8 +13,8 @@ class JobOffer(models.Model):
     ]
     reference = models.CharField(max_length=255, null=True, blank=True, unique=True)
     titre = models.CharField(max_length=255)
-    description = models.TextField()
-    profil_recherche = models.TextField()
+    description = RichTextField()
+    profil_recherche = RichTextField()
     type_contrat = models.CharField(max_length=20, choices=TYPE_CONTRAT)
     lieu = models.CharField(max_length=255)
     date_publication = models.DateField(default=timezone.now)

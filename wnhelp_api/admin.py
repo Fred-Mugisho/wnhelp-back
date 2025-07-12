@@ -228,6 +228,9 @@ class JobOfferAdmin(admin.ModelAdmin):
     search_fields = ('titre', 'description', 'profil_recherche', 'lieu')
     ordering = ('-date_publication',)
     readonly_fields = ['author', 'counter_views']
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget()},  # Ajoute CKEditor au champ contenu
+    }
     
     def save_model(self, request, obj, form, change):
         if not obj.author:
