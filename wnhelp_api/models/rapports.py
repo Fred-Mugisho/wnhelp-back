@@ -16,6 +16,7 @@ class Rapport(models.Model):
     
     class Meta:
         verbose_name_plural = "RAPPORTS"
+        
     
     def save(self, *args, **kwargs):
         is_new = not self.pk
@@ -54,19 +55,23 @@ class Rapport(models.Model):
                 destinateurs=['admin@wnhelp.org'],
                 bcc=[sub.email for sub in subscribers]
             )
-    
+
+
 class RapportSerializer(serializers.ModelSerializer):
     author = SimpleCustomUserSerializer()
     class Meta:
         model = Rapport
         fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'published_at', 'updated_at', 'author']
-        
+
+
 class OthersRapportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport
         fields = ['id', 'title', 'slug', 'cover_image', 'contenu', 'published_at', 'updated_at']
-        
+
+
 class RapportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport
         fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'author', 'published_at']
+

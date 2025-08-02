@@ -119,7 +119,7 @@ def commenter_article(request, slug):
 @api_view(["GET"])
 def get_rapports(request):
     try:
-        rapports = Rapport.objects.all().order_by("-id")
+        rapports = Rapport.objects.all().order_by("-published_at")
         search_content = request.GET.get("search_content")
         page = request.GET.get("page", 1)
         limit_page = request.GET.get("limit_page", 15)
@@ -146,7 +146,7 @@ def get_rapport(request, slug):
                 {"message": "Rapport n'existe pas"}, status=status.HTTP_404_NOT_FOUND
             )
 
-        autres_rapport = Rapport.objects.all().exclude(slug=slug).order_by("-id")[:3]
+        autres_rapport = Rapport.objects.all().exclude(slug=slug).order_by("-published_at")[:3]
         autres_rapport_serializer = OthersRapportSerializer(
             autres_rapport, many=True
         ).data

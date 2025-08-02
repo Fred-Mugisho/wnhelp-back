@@ -31,7 +31,24 @@ INSTALLED_APPS = [
     'wnhelp_api.apps.WnhelpApiConfig',
     'rest_framework',
     'corsheaders',
+    
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',
+    'modelcluster',
+    'taggit',
+    
 ]
+
+WAGTAIL_SITE_NAME = "WNH – Tableau de bord"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
