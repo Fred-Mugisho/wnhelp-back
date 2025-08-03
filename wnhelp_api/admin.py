@@ -13,6 +13,7 @@ from django.utils.html import format_html
 from adminsortable2.admin import SortableInlineAdminMixin, SortableAdminBase
 from ckeditor.widgets import CKEditorWidget
 from .models.jobs import *
+from .models.media_rapport_activite import MediaRapportActivite
 
 @admin.register(SubscriberNewsletter)
 class SubscriberNewsletterAdmin(admin.ModelAdmin):
@@ -116,48 +117,48 @@ class ContactMessageAdmin(admin.ModelAdmin):
         return obj.message[:50] + "..." if len(obj.message) > 50 else obj.message
     short_message.short_description = "Message"
     
-class GallerieImageInline(admin.TabularInline):
-    model = GallerieImage
-    extra = 3  # Nombre de champs vides à afficher pour ajouter de nouvelles images
+# class GallerieImageInline(admin.TabularInline):
+#     model = GallerieImage
+#     extra = 3  # Nombre de champs vides à afficher pour ajouter de nouvelles images
     
-    fields = ('image', 'thumbnail',)  # On ajoute le champ thumbnail en lecture seule
-    readonly_fields = ('thumbnail',)
+#     fields = ('image', 'thumbnail',)  # On ajoute le champ thumbnail en lecture seule
+#     readonly_fields = ('thumbnail',)
 
-    def thumbnail(self, instance):
-        if instance.image:
-            return format_html('<img src="{}" width="100" style="border-radius: 8px;" />', instance.image.url)
-        return "Aucune image"
+#     def thumbnail(self, instance):
+#         if instance.image:
+#             return format_html('<img src="{}" width="100" style="border-radius: 8px;" />', instance.image.url)
+#         return "Aucune image"
 
-    thumbnail.short_description = 'Aperçu'
+#     thumbnail.short_description = 'Aperçu'
 
-@admin.register(Gallerie)
-class GallerieAdmin(admin.ModelAdmin):
-    list_display = ('title', 'uploaded_at', 'author')
-    list_filter = ('title', 'uploaded_at')
-    search_fields = ('title', 'description', 'author__username')
-    ordering = ('-uploaded_at',)
-    readonly_fields = ['author']
+# @admin.register(Gallerie)
+# class GallerieAdmin(admin.ModelAdmin):
+#     list_display = ('title', 'uploaded_at', 'author')
+#     list_filter = ('title', 'uploaded_at')
+#     search_fields = ('title', 'description', 'author__username')
+#     ordering = ('-uploaded_at',)
+#     readonly_fields = ['author']
     
-    inlines = [GallerieImageInline]
+#     inlines = [GallerieImageInline]
     
-    def save_model(self, request, obj, form, change):
-        author = request.user or None
-        obj.author = author
-        super().save_model(request, obj, form, change)
+#     def save_model(self, request, obj, form, change):
+#         author = request.user or None
+#         obj.author = author
+#         super().save_model(request, obj, form, change)
         
-@admin.register(GallerieImage)
-class GallerieImageAdmin(admin.ModelAdmin):
-    list_display = ('get_gallerie_title', 'thumbnail')
-    list_filter = ('galerie',)
-    search_fields = ('galerie__title', 'galerie__description')
-    ordering = ('-id',)
+# @admin.register(GallerieImage)
+# class GallerieImageAdmin(admin.ModelAdmin):
+#     list_display = ('get_gallerie_title', 'thumbnail')
+#     list_filter = ('galerie',)
+#     search_fields = ('galerie__title', 'galerie__description')
+#     ordering = ('-id',)
 
-    def thumbnail(self, obj):
-        """Affiche un aperçu du logo dans l’admin"""
-        if obj.image:
-            return format_html(f'<img src="{obj.image.url}" width="50" height="50" style="border-radius: 5px;" />')
-        return "Pas de logo"
-    thumbnail.short_description = "Aperçu"
+#     def thumbnail(self, obj):
+#         """Affiche un aperçu du logo dans l’admin"""
+#         if obj.image:
+#             return format_html(f'<img src="{obj.image.url}" width="50" height="50" style="border-radius: 5px;" />')
+#         return "Pas de logo"
+#     thumbnail.short_description = "Aperçu"
     
 @admin.register(Partenaires)
 class PartenairesAdmin(admin.ModelAdmin):
@@ -203,6 +204,20 @@ class RapportAdmin(admin.ModelAdmin):
             return format_html(f'<a href="{obj.file.url}" target="_blank">Télécharger</a>')
         return "Aucun fichier"
     download_link.short_description = "Fichier"
+    
+@admin.register(MediaRapportActivite)
+class MediaRapportActiviteAdmin(admin.ModelAdmin):
+    list_display = ('rapport', 'type_media', 'order', 'image_preview')
+    list_filter = ('rapport',)
+    search_fields = ('title', 'rapport__title')
+    ordering = ('rapport', 'order')
+
+    def image_preview(self, obj):
+        """Affiche un aperçu de l'image associée à la section"""
+        if obj.image:
+            return format_html(f'<img src="{obj.image.url}" width="50" height="50" style="border-radius: 5px;" />')
+        return "Pas d'image"
+    image_preview.short_description = "Aperçu"
     
 @admin.register(SectionArticle)
 class SectionArticleAdmin(admin.ModelAdmin):

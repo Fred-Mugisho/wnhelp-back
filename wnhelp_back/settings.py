@@ -168,8 +168,12 @@ EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL')
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = "https://media.wnhelp.org/"
-MEDIA_ROOT = "/home/worldnee/media.wnhelp.org/"
+if DEVELOPPEMENT:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+else:
+    MEDIA_URL = "https://media.wnhelp.org/"
+    MEDIA_ROOT = "/home/worldnee/media.wnhelp.org/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

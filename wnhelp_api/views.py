@@ -151,7 +151,7 @@ def get_rapport(request, slug):
             autres_rapport, many=True
         ).data
 
-        serializer_data = RapportSerializer(rapport).data
+        serializer_data = DetailsRapportSerializer(rapport).data
         serializer_data["autres_rapports"] = autres_rapport_serializer
         return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
@@ -324,7 +324,7 @@ def offres_emploi(request, id=None):
             return Response(serializer_data, status=status.HTTP_200_OK)
 
         offres = JobOffer.objects.filter(
-            actif=True, date_expiration__gte=timezone.now()
+            actif=True
         ).order_by("-date_publication")
 
         page = request.GET.get("page", 1)

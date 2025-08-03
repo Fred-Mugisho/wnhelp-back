@@ -5,6 +5,12 @@ from django.utils import timezone
 
 class Rapport(models.Model):
     """Rapports publiés par l'organisation"""
+    TYPE_CHOICE = (
+        ('rapport', 'Rapport'),
+        ('activite', 'Activité'),
+    )
+    
+    type_rapport = models.CharField(max_length=10, choices=TYPE_CHOICE, default='rapport')
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=300, unique=True, blank=True)
     contenu = RichTextField()  # 🔥 Champ texte riche avec CKEditor
@@ -25,7 +31,8 @@ class Rapport(models.Model):
         if is_new:
             self.send_notification_newsletter()
         
-        if self.cover_image:
+        if self.cover_image and not self.cover_image.name.endswith('.webp'):
+            # Compression de l'image si elle n'est pas en format WEBP
             compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
             self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
@@ -54,19 +61,33 @@ class Rapport(models.Model):
                 destinateurs=['admin@wnhelp.org'],
                 bcc=[sub.email for sub in subscribers]
             )
+            
+    @property
+    def medias_rapport_activite(self):
+        """Rapports publiés par l'organisation"""
+        from .media_rapport_activite import MediaRapportActivite, MediaRapportActiviteSerializer
+        
+        medias = MediaRapportActivite.objects.filter(rapport=self)[:3]
+        serializer = MediaRapportActiviteSerializer(medias, many=True)
+        return serializer.data
     
 class RapportSerializer(serializers.ModelSerializer):
-    author = SimpleCustomUserSerializer()
+    # author = SimpleCustomUserSerializer()
     class Meta:
         model = Rapport
-        fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'published_at', 'updated_at', 'author']
+        fields = ['id', 'type_rapport', 'title', 'slug', 'contenu', 'cover_image', 'file', 'published_at', 'updated_at']
+        
+class DetailsRapportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rapport
+        fields = ['id', 'type_rapport', 'title', 'slug', 'contenu', 'cover_image', 'file', 'published_at', 'updated_at', 'medias_rapport_activite']
         
 class OthersRapportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport
-        fields = ['id', 'title', 'slug', 'cover_image', 'contenu', 'published_at', 'updated_at']
+        fields = ['id', 'type_rapport', 'title', 'slug', 'cover_image', 'contenu', 'published_at', 'updated_at']
         
 class RapportFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rapport
-        fields = ['id', 'title', 'slug', 'contenu', 'cover_image', 'file', 'author', 'published_at']
+        fields = ['id', 'type_rapport', 'title', 'slug', 'contenu', 'cover_image', 'file', 'author', 'published_at']

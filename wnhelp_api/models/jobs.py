@@ -26,6 +26,10 @@ class JobOffer(models.Model):
 
     def __str__(self):
         return self.titre
+    
+    @property
+    def is_expired(self):
+        return self.date_expiration and self.date_expiration < timezone.now().date()
 
     class Meta:
         verbose_name_plural = "OFFRES D'EMPLOI"
@@ -35,4 +39,4 @@ class JobOfferSerializer(serializers.ModelSerializer):
     author = SimpleCustomUserSerializer()
     class Meta:
         model = JobOffer
-        fields = ['id', 'reference', 'titre', 'description', 'profil_recherche', 'type_contrat', 'lieu', 'date_publication', 'date_expiration', 'actif', 'lien_postulation', 'author', 'counter_views']
+        fields = ['id', 'reference', 'titre', 'description', 'profil_recherche', 'type_contrat', 'lieu', 'date_publication', 'date_expiration', 'is_expired', 'actif', 'lien_postulation', 'author', 'counter_views']
