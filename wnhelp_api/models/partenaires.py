@@ -28,4 +28,12 @@ class PartenairesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partenaires
         fields = ['id', 'name', 'logo', 'website', 'description', 'joined_at']
-    
+
+
+class PartenairesCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Partenaires
+        fields = ['name', 'logo', 'website', 'description']
+
+
+

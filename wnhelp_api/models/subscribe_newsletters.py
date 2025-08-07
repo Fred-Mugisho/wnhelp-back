@@ -12,7 +12,10 @@ class SubscriberNewsletter(models.Model):
     def __str__(self):
         return self.email
 
+
 class SubscriberNewsletterSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscriberNewsletter
         fields = ['id', 'email', 'subscribed_at']
+
+

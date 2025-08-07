@@ -45,47 +45,6 @@ def commenter_article(request, slug):
         return response_exception(e)
 
 
-@api_view(["GET"])
-def get_rapports(request):
-    try:
-        rapports = Rapport.objects.all().order_by("-published_at")
-        search_content = request.GET.get("search_content")
-        page = request.GET.get("page", 1)
-        limit_page = request.GET.get("limit_page", 15)
-
-        if search_content:
-            rapports = rapports.filter(
-                Q(title__icontains=search_content)
-                | Q(contenu__icontains=search_content)
-            )
-
-        serializer_data = RapportSerializer(rapports, many=True).data
-        pagination = KBPaginator(serializer_data, limit_page).get_page(page)
-        return Response(pagination, status=status.HTTP_200_OK)
-    except Exception as e:
-        return response_exception(e)
-
-
-@api_view(["GET"])
-def get_rapport(request, slug):
-    try:
-        rapport = Rapport.objects.filter(slug=slug).first()
-        if not rapport:
-            return Response(
-                {"message": "Rapport n'existe pas"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        autres_rapport = Rapport.objects.all().exclude(slug=slug).order_by("-published_at")[:3]
-        autres_rapport_serializer = OthersRapportSerializer(
-            autres_rapport, many=True
-        ).data
-
-        serializer_data = RapportSerializer(rapport).data
-        serializer_data["autres_rapports"] = autres_rapport_serializer
-        return Response(serializer_data, status=status.HTTP_200_OK)
-    except Exception as e:
-        return response_exception(e)
-
 
 @api_view(["POST", "PUT"])
 def contactez_nous(request):
@@ -153,70 +112,6 @@ def contactez_nous(request):
         return response_exception(e)
 
 
-@api_view(["POST", "PUT"])
-def subscribe_newsletters(request):
-    try:
-        email = request.data.get("email")
-        if not email:
-            return Response(
-                {"message": "Veuillez entrer une adresse email"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not check_validate_email(email):
-            return Response(
-                {"message": "Veuillez entrer une adresse email valide"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if SubscriberNewsletter.objects.filter(email=email).exists():
-            # Envoyer un email de confirmation à l'utilisateur
-            subject = "Confirmation de votre abonnement à notre newsletter"
-            message = """
-                <p>Bonjour,</p>
-                <p>Merci pour votre abonnement à notre <strong>newsletter</strong> ! 🎉</p>
-                <p>Désormais, vous recevrez régulièrement nos dernières <strong>actualités et rapports</strong> directement dans votre boîte mail.</p>
-                <p>Si ce message ne vous était pas destiné ou si vous vous êtes inscrit par erreur, vous pouvez vous désabonner à tout moment via le lien en bas de nos emails.</p>
-                <p style="margin-top: 32px;">Cordialement,<br>
-                L’équipe <strong>World Needs and Help</strong></p>
-            """
-            send_mail_template(subject, message, [email])
-            return Response(
-                {"message": "Abonnement effectué avec succès"},
-                status=status.HTTP_201_CREATED,
-            )
-
-        subscriber_data = {"email": email}
-        message_form = SubscriberNewsletterSerializer(data=subscriber_data)
-        if message_form.is_valid():
-            message_form.save()
-
-            # Envoyer un email de confirmation à l'utilisateur
-            subject = "Confirmation de votre abonnement à notre newsletter"
-            message = """
-                <p>Bonjour,</p>
-                <p>Merci pour votre abonnement à notre <strong>newsletter</strong> ! 🎉</p>
-                <p>Désormais, vous recevrez régulièrement nos dernières <strong>actualités et rapports</strong> directement dans votre boîte mail.</p>
-                <p>Si ce message ne vous était pas destiné ou si vous vous êtes inscrit par erreur, vous pouvez vous désabonner à tout moment via le lien en bas de nos emails.</p>
-                <p style="margin-top: 32px;">Cordialement,<br>
-                L’équipe <strong>World Needs and Help</strong></p>
-            """
-            send_mail_template(subject, message, [email])
-
-            return Response(
-                {"message": "Abonnement effectué avec succès"},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            return Response(
-                {
-                    "message": "Veuillez vérifier votre message",
-                    "error": message_form.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-    except Exception as e:
-        return response_exception(e)
-
-
 @api_view(["GET"])
 def gallerie(request):
     try:
@@ -226,16 +121,6 @@ def gallerie(request):
         serializer_data = GallerieImageSerializer(images, many=True).data
         paginate_data = KBPaginator(serializer_data, limit_page).get_page(page)
         return Response(paginate_data, status=status.HTTP_200_OK)
-    except Exception as e:
-        return response_exception(e)
-
-
-@api_view(["GET"])
-def get_partenaires(request):
-    try:
-        partenaires = Partenaires.objects.all()
-        serializer_data = PartenairesSerializer(partenaires, many=True).data
-        return Response(serializer_data, status=status.HTTP_200_OK)
     except Exception as e:
         return response_exception(e)
 
@@ -285,3 +170,21 @@ def offres_emploi(request, id=None):
         )
     except Exception as e:
         return response_exception(e)
+
+
+
+@api_view(["GET"])
+def get_partenaires(request):
+    try:
+        partenaires = Partenaires.objects.all().order_by('-joined_at')
+        serializer_data = PartenairesSerializer(partenaires, many=True).data
+        return Response(serializer_data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return response_exception(e)
+
+
+
+
+
+
+
