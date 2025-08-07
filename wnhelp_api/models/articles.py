@@ -16,7 +16,7 @@ class Article(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     categorie = models.ForeignKey(Categorie, on_delete=models.SET_NULL, null=True, related_name='articles')
     cover_image = models.ImageField(upload_to='blog/covers/')
-    contenu = RichTextField()  # 🔥 Champ texte riche avec CKEditor
+    contenu = RichTextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -29,12 +29,11 @@ class Article(models.Model):
         self.slug = slugify(self.title)
         is_new = not self.pk
         
-        super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
+        super().save(*args, **kwargs)
 
         if is_new and self.status == 'published':
             self.send_notification_newsletter()
             
-        # Compression de l'image
         compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
         self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
@@ -78,14 +77,16 @@ class Article(models.Model):
         comments = Comment.objects.filter(article=self, approved=True).order_by('-created_at')
         serialized_data = CommentSerializer(comments, many=True).data
         return serialized_data
-    
+
+
 class ArticleSerializer(serializers.ModelSerializer):
     author = SimpleCustomUserSerializer()
     categorie = CategorieSerializer()
     class Meta:
         model = Article
         fields = ['id', 'title', 'slug', 'author', 'categorie', 'cover_image', 'contenu', 'status', 'views', 'created_at', 'updated_at']
-        
+
+
 class OthersArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
@@ -98,8 +99,12 @@ class DetailsArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ['id', 'title', 'slug', 'author', 'categorie', 'cover_image', 'contenu', 'status', 'views', 'created_at', 'updated_at', 'all_comments']
-        
+
+
 class ArticleFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ['id', 'title', 'categorie', 'cover_image', 'contenu', 'author']
+
+
+
