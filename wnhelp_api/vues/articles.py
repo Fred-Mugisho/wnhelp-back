@@ -83,12 +83,12 @@ def get_article(request, slug):
         return response_exception(e)
 
 
+# @login_required
 @api_view(["PUT", "PATCH"])
-@login_required
 def update_article(request, id):
     try:
         article = get_object_or_404(Article, id=id)
-        serializer = ArticleFormSerializer(article, data=request.data)
+        serializer = ArticleFormSerializer(article, data=request.data, partial=True)
         if serializer.is_valid():
             article = serializer.save()
             return Response(ArticleSerializer(article).data, status=status.HTTP_200_OK)
