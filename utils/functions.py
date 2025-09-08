@@ -17,6 +17,8 @@ from django.core.files.base import ContentFile
 from wnhelp_api.tasks import send_mail_template_async
 from django.core.files.storage import default_storage
 import io
+import unicodedata
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +167,15 @@ def check_validate_email(email):
     else:
         return False
     
+
+def slugify_filename(filename: str) -> str:
+    base, ext = os.path.splitext(filename)
+    # Remplacer les caractères accentués par leur équivalent ASCII
+    base = unicodedata.normalize('NFKD', base).encode('ascii', 'ignore').decode('ascii')
+    # Remplacer les espaces et caractères spéciaux par des underscores
+    base = re.sub(r'[^a-zA-Z0-9_-]', '_', base)
+    return f"{base}{ext}"
+
 class ImageCompressor:
     def __init__(self, image, format='WEBP'):
         self.image = image
@@ -257,11 +268,14 @@ class ImageCompressor:
                     w_percent = self.max_width / float(img.width)
                     h_size = int(float(img.height) * w_percent)
                     img = img.resize((self.max_width, h_size), Image.Resampling.LANCZOS)
+                    
 
                 # Nouveau nom en .webp
-                original_filename = os.path.basename(old_image_name)
-                base, _ = os.path.splitext(original_filename)
-                new_filename = f"{base}.webp"
+                new_filename = f"{uuid.uuid4().hex}.webp"
+                # original_filename = os.path.basename(old_image_name)
+                # base, _ = os.path.splitext(original_filename)
+                # safe_base = slugify_filename(base)
+                # new_filename = f"{safe_base}.webp"
 
                 # Sauvegarde en WebP (compression automatique)
                 img.save(self.output, "WEBP", quality=self.quality, optimize=True)
