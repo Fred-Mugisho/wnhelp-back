@@ -29,16 +29,18 @@ class Article(models.Model):
         self.slug = slugify(self.title)
         is_new = not self.pk
         
+        # Compression de l'image
+        compressor = ImageCompressor(self.cover_image)
+        self.cover_image = compressor.compress_image()
+        # compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
+        # self.cover_image.save(compressed_image.name, compressed_image, save=False)
+        
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 
         if is_new and self.status == 'published':
             self.send_notification_newsletter()
-            
-        # Compression de l'image
-        compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
-        self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
-        super().save(update_fields=['cover_image'])
+        # super().save(update_fields=['cover_image'])
         
     def send_notification_newsletter(self):
         from wnhelp_api.models.subscribe_newsletters import SubscriberNewsletter

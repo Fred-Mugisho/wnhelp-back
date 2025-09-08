@@ -39,12 +39,15 @@ class GallerieImage(models.Model):
         return self.galerie.title
     
     def save(self, *args, **kwargs):
+        compressor = ImageCompressor(self.image)
+        self.image = compressor.compress_image()
+        
         super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un fichier valide
 
-        compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
-        self.image.save(compressed_image.name, compressed_image, save=False)
+        # compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
+        # self.image.save(compressed_image.name, compressed_image, save=False)
 
-        super().save(update_fields=['image'])
+        # super().save(update_fields=['image'])
         
 class GallerieImageSerializer(serializers.ModelSerializer):
     galerie = GallerieSerializer(read_only=True)

@@ -19,13 +19,17 @@ class MediaRapportActivite(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         if self.image and not self.image.name.endswith('.webp'):
             # Compression de l'image si elle n'est pas en format WEBP
-            compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
-            self.image.save(compressed_image.name, compressed_image, save=False)
+            compressor = ImageCompressor(self.cover)
+            self.cover = compressor.compress_image()
+            
+            # super().save(update_fields=['cover'])
+            # compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
+            # self.image.save(compressed_image.name, compressed_image, save=False)
+        super().save(*args, **kwargs)
 
-            super().save(update_fields=['image'])
+            # super().save(update_fields=['image'])
     
     class Meta:
         verbose_name_plural = 'MEDIA RAPPORT ACTIVITE'

@@ -26,17 +26,22 @@ class Rapport(models.Model):
     def save(self, *args, **kwargs):
         is_new = not self.pk
         self.slug = slugify(self.title)
+        
+        if self.cover_image and not self.cover_image.name.endswith('.webp'):
+            # Compression de l'image si elle n'est pas en format WEBP
+            compressor = ImageCompressor(self.cover_image)
+            self.cover_image = compressor.compress_image()
+            
         super().save(*args, **kwargs)
         
         if is_new:
             self.send_notification_newsletter()
         
-        if self.cover_image and not self.cover_image.name.endswith('.webp'):
-            # Compression de l'image si elle n'est pas en format WEBP
-            compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
-            self.cover_image.save(compressed_image.name, compressed_image, save=False)
+            
+            # compressed_image = ImageCompressor(self.cover_image, format='WEBP').compress_image()
+            # self.cover_image.save(compressed_image.name, compressed_image, save=False)
 
-            super().save(update_fields=['cover_image'])
+            # super().save(update_fields=['cover_image'])
 
     def __str__(self):
         return self.title

@@ -16,14 +16,16 @@ class SectionArticle(models.Model):
         return f"{self.article.title} - {self.title if self.title else 'Section'}"
     
     def save(self, *args, **kwargs):
+        compressor = ImageCompressor(self.image)
+        self.image = compressor.compress_image()
         super().save(*args, **kwargs)
         
-        if self.image:
-            # Compression de l'image
-            compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
-            self.image.save(compressed_image.name, compressed_image, save=False)
+        # if self.image:
+        #     # Compression de l'image
+        #     compressed_image = ImageCompressor(self.image, format='WEBP').compress_image()
+        #     self.image.save(compressed_image.name, compressed_image, save=False)
 
-            super().save(update_fields=['image'])
+        #     super().save(update_fields=['image'])
         
 class SectionArticleSerializer(serializers.ModelSerializer):
     class Meta:

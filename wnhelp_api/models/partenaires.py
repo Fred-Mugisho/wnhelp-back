@@ -17,12 +17,15 @@ class Partenaires(models.Model):
         return self.name
     
     def save(self, *args, **kwargs):
+        compressor = ImageCompressor(self.logo)
+        self.logo = compressor.compress_image()
+        
         super().save(*args, **kwargs)
 
-        compressed_image = ImageCompressor(self.logo, format='WEBP').compress_image()
-        self.logo.save(compressed_image.name, compressed_image, save=False)
+        # compressed_image = ImageCompressor(self.logo, format='WEBP').compress_image()
+        # self.logo.save(compressed_image.name, compressed_image, save=False)
 
-        super().save(update_fields=['logo'])
+        # super().save(update_fields=['logo'])
             
 class PartenairesSerializer(serializers.ModelSerializer):
     class Meta:
