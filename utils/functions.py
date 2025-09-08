@@ -271,33 +271,7 @@ class ImageCompressor:
             img.save(output, "WEBP", quality=self.quality, optimize=True)
             output.seek(0)
 
-            # Charger l'image depuis le stockage
-            # with default_storage.open(old_image_name, "rb") as img_file:
-            #     img = Image.open(img_file)
-
-            #     # Convertir en RGB pour compatibilité
-            #     if img.mode in ("RGBA", "P"):
-            #         img = img.convert("RGB")
-                    
-            #     # Redimensionner si l'image est trop large
-            #     if img.width > self.max_width:
-            #         w_percent = self.max_width / float(img.width)
-            #         h_size = int(float(img.height) * w_percent)
-            #         img = img.resize((self.max_width, h_size), Image.Resampling.LANCZOS)
-                    
-
-            #     # Nouveau nom en .webp
-            #     new_filename = f"{uuid.uuid4().hex}.webp"
-            #     # original_filename = os.path.basename(old_image_name)
-            #     # base, _ = os.path.splitext(original_filename)
-            #     # safe_base = slugify_filename(base)
-            #     # new_filename = f"{safe_base}.webp"
-
-            #     # Sauvegarde en WebP (compression automatique)
-            #     img.save(self.output, "WEBP", quality=self.quality, optimize=True)
-            #     self.output.seek(0)
-
-            return ContentFile(self.output.getvalue(), name=new_filename)
+            return ContentFile(output.getvalue(), name=new_filename)
         except Exception as e:
             print(f"[ImageCompressor] Error compressing image: {e}")
             return self.image
