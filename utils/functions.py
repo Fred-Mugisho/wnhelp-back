@@ -177,7 +177,7 @@ def slugify_filename(filename: str) -> str:
     return f"{base}{ext}"
 
 class ImageCompressor:
-    def __init__(self, image, format='WEBP'):
+    def __init__(self, image):
         self.image = image
         self.max_width = 1200  # largeur max pour le web
         self.quality = 85

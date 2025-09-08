@@ -26,14 +26,14 @@ class Rapport(models.Model):
     def save(self, *args, **kwargs):
         is_new = not self.pk
         self.slug = slugify(self.title)
-        
-        if self.cover_image and not self.cover_image.name.endswith('.webp'):
-            # Compression de l'image si elle n'est pas en format WEBP
+
+        if self.cover_image:
+            # Toujours générer un nom WebP unique
             compressor = ImageCompressor(self.cover_image)
-            self.cover_image = compressor.compress_image()
-            
+            self.cover_image = compressor.compress_image()  # renomme avec UUID + WebP
+
         super().save(*args, **kwargs)
-        
+
         if is_new:
             self.send_notification_newsletter()
         
