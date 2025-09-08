@@ -168,9 +168,11 @@ def check_validate_email(email):
 class ImageCompressor:
     def __init__(self, image, format='WEBP'):
         self.image = image
-        self.format = format.upper()
+        self.max_width = 1200  # largeur max pour le web
+        self.quality = 85
+        # self.format = format.upper()
         self.output = BytesIO()
-        self.size = (1200, 600)  # Taille uniforme pour toutes les images
+        # self.size = (1200, 600)  # Taille uniforme pour toutes les images
     
     def compress(self):
         try:
@@ -179,6 +181,12 @@ class ImageCompressor:
             # Convertir en mode RGB si nécessaire (évite les erreurs sur PNG)
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
+                
+            # Verifier la taille de l'image (5Mo)
+            if img.size > (5 * 1024 * 1024):
+                # Redimensionner l'image si elle est trop grande
+                img.thumbnail((self.size[0], int(self.size[1] * (5 * 1024 * 1024) / img.size[0])))
+            
 
             # Redimensionner l'image en conservant le ratio
             img.thumbnail(self.size)
@@ -202,7 +210,7 @@ class ImageCompressor:
         finally:
             self.output.close()
             
-    def compress_image(self):
+    def compress_image_old(self):
         try:
             if self.image.name.endswith(".webp"):
                 return self.image
@@ -224,6 +232,44 @@ class ImageCompressor:
                 return ContentFile(self.output.getvalue(), name=new_filename)
         except Exception as e:
             print(f"Error compressing image: {e}")
+            return self.image
+        finally:
+            self.output.close()
+            
+    def compress_image(self):
+        try:
+            # Si déjà en webp → on ne fait rien
+            if self.image.name.lower().endswith(".webp"):
+                return self.image
+
+            old_image_name = self.image.name
+
+            # Charger l'image depuis le stockage
+            with default_storage.open(old_image_name, "rb") as img_file:
+                img = Image.open(img_file)
+
+                # Convertir en RGB pour compatibilité
+                if img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+                    
+                # Redimensionner si l'image est trop large
+                if img.width > self.max_width:
+                    w_percent = self.max_width / float(img.width)
+                    h_size = int(float(img.height) * w_percent)
+                    img = img.resize((self.max_width, h_size), Image.Resampling.LANCZOS)
+
+                # Nouveau nom en .webp
+                original_filename = os.path.basename(old_image_name)
+                base, _ = os.path.splitext(original_filename)
+                new_filename = f"{base}.webp"
+
+                # Sauvegarde en WebP (compression automatique)
+                img.save(self.output, "WEBP", quality=self.quality, optimize=True)
+                self.output.seek(0)
+
+                return ContentFile(self.output.getvalue(), name=new_filename)
+        except Exception as e:
+            print(f"[ImageCompressor] Error compressing image: {e}")
             return self.image
         finally:
             self.output.close()
