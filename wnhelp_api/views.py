@@ -123,6 +123,12 @@ def get_rapports(request):
         search_content = request.GET.get("search_content")
         page = request.GET.get("page", 1)
         limit_page = request.GET.get("limit_page", 15)
+        partenaires_id = request.GET.get("partenaires", "").split(",")
+        
+        partenaires = [int(partenaire_id) for partenaire_id in partenaires_id if partenaire_id and is_convertible_to_int(partenaire_id)]
+
+        if partenaires:
+            rapports = rapports.filter(partenaires__id__in=partenaires)
 
         if search_content:
             rapports = rapports.filter(
