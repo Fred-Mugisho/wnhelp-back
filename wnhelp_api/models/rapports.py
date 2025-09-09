@@ -59,7 +59,7 @@ class Rapport(models.Model):
                 <p>Bonjour,</p>
                 <p>Nous venons de publier un <strong>nouveau rapport</strong> sur notre site :</p>
                 <p style="font-size: 18px;"><strong>{self.title}</strong></p>
-                <p>Vous pouvez le consulter depuis le lien --> <a href="https://rdc.wnhelp.org/rapports/{self.slug}" target="_blank" style="text-decoration: underline;">Lire le rapport</a></p>
+                <p>Vous pouvez le consulter depuis le lien --> <a href="https://www.wnhelp.org/nos-produits/rapports-activites/{self.slug}" target="_blank" style="text-decoration: underline;">Lire le rapport</a></p>
                 <p style="margin-top: 32px;">Merci de faire partie de notre communauté,<br>
                 L’équipe <strong>World Needs and Help</strong></p>
             """
